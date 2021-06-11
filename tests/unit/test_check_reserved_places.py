@@ -13,7 +13,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition, correct booked & correct wanted places."""
         kwargs = {
-            'competitionName': 'Spring Festival',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Spring Festival',
             'places_booked': 11,
             'places_wanted': 1
         }
@@ -23,7 +24,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition, full booked and too many places wanted."""
         kwargs = {
-            'competitionName': 'Spring Festival',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Spring Festival',
             'places_booked': 12,
             'places_wanted': 13
         }
@@ -33,7 +35,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition, no booked but too many places wanted."""
         kwargs = {
-            'competitionName': 'Spring Festival',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Spring Festival',
             'places_booked': 0,
             'places_wanted': 13
         }
@@ -43,7 +46,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition but full booked and one place wanted."""
         kwargs = {
-            'competitionName': 'Spring Festival',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Spring Festival',
             'places_booked': 12,
             'places_wanted': 1
         }
@@ -52,7 +56,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, correct booked and correct wanted places."""
         kwargs = {
-            'competitionName': 'Bad Comp',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Bad Comp',
             'places_booked': 11,
             'places_wanted': 1
         }
@@ -62,7 +67,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, full booked and too many places wanted."""
         kwargs = {
-            'competitionName': 'Bad Comp',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Bad Comp',
             'places_booked': 12,
             'places_wanted': 13
         }
@@ -72,7 +78,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, no booked and too many wanted places."""
         kwargs = {
-            'competitionName': 'Bad Comp',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Bad Comp',
             'places_booked': 0,
             'places_wanted': 13
         }
@@ -82,7 +89,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, full booked and one place wanted."""
         kwargs = {
-            'competitionName': 'Bad Comp',
+            'club_name': 'Simply Lift',
+            'competition_name': 'Bad Comp',
             'places_booked': 12,
             'places_wanted': 1
         }

@@ -53,9 +53,9 @@ class TestShowSummary(Client):
 
 
 class TestBook(Client):
-    """"""
-    def test_get_books_from_own_mail(self, client):
-        """"""
+    """Book tests"""
+    def test_book_on_futur_comp(self, client):
+        """Book on futur competitions only"""
         # Get competitions
         competitions = server.loadCompetitions()
         clubs = server.loadClubs()
@@ -66,13 +66,12 @@ class TestBook(Client):
                 )
                 comp_date = datetime.datetime.strptime(competition["date"],
                                                        '%Y-%m-%d %H:%M:%S')
-                if comp_date < datetime.datetime.today:
+                if comp_date > datetime.datetime.today():
                     assert rv.status_code == 200
-                    assert b'Places availables' in rv.data
+                    assert b'How many places?' in rv.data
                 else:
                     assert rv.status_code == 302
                     # assert b'Something went wrong' in rv.data
-
 
 
 class TestPurchasePlaces(Client):
