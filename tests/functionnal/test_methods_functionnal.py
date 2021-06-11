@@ -6,7 +6,7 @@ sys.path.append('.')
 import pytest
 # Locals Libs:
 import server
-from server import (
+from functions import (
     substract_clubs_points as sub_club,
     substract_comp_places as sub_comp,
     check_books_places as chk_book,
