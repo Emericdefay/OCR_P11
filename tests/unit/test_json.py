@@ -38,7 +38,7 @@ class TestJSON:
         competitions = [
             {
                 'name': 'Spring Festival',
-                'date': '2021-03-27 10:00:00',
+                'date': '2022-03-27 10:00:00',
                 'numberOfPlaces': '25'
             },
             {

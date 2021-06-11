@@ -4,7 +4,7 @@ sys.path.append('.')
 # External Libs:
 import pytest
 # Locals Libs:
-import server
+import functions
 
 
 class TestCheckReservedPlaces:
@@ -15,10 +15,9 @@ class TestCheckReservedPlaces:
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
-            'places_booked': 11,
             'places_wanted': 1
         }
-        assert server.check_books_places(**kwargs) == 1
+        assert functions.check_books_places(**kwargs) == 1
         
     def test_correct_comp_full_booked_and_too_many_wanted(self):
         """Check already booked and wanted places to reserve
@@ -26,10 +25,9 @@ class TestCheckReservedPlaces:
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
-            'places_booked': 12,
             'places_wanted': 13
         }
-        assert server.check_books_places(**kwargs) == False
+        assert functions.check_books_places(**kwargs) == False
 
     def test_correct_comp_too_many_places_wanted(self):
         """Check already booked and wanted places to reserve
@@ -37,10 +35,9 @@ class TestCheckReservedPlaces:
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
-            'places_booked': 0,
             'places_wanted': 13
         }
-        assert server.check_books_places(**kwargs) == False
+        assert functions.check_books_places(**kwargs) == False
 
     def test_correct_comp_places_booked_already_full(self):
         """Check already booked and wanted places to reserve
@@ -48,20 +45,18 @@ class TestCheckReservedPlaces:
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
-            'places_booked': 12,
             'places_wanted': 1
         }
-        assert server.check_books_places(**kwargs) == False
+        assert functions.check_books_places(**kwargs) == True
     def test_incorrect_comp_correct_booked_correct_wanted(self):
         """Check already booked and wanted places to reserve
         Incorrect competition, correct booked and correct wanted places."""
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
-            'places_booked': 11,
             'places_wanted': 1
         }
-        assert server.check_books_places(**kwargs) == False
+        assert functions.check_books_places(**kwargs) == False
         
     def test_incorrect_comp_full_booked_and_too_many_wanted(self):
         """Check already booked and wanted places to reserve
@@ -69,10 +64,9 @@ class TestCheckReservedPlaces:
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
-            'places_booked': 12,
             'places_wanted': 13
         }
-        assert server.check_books_places(**kwargs) == False
+        assert functions.check_books_places(**kwargs) == False
 
     def test_incorrect_comp_too_many_places_wanted(self):
         """Check already booked and wanted places to reserve
@@ -80,10 +74,9 @@ class TestCheckReservedPlaces:
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
-            'places_booked': 0,
             'places_wanted': 13
         }
-        assert server.check_books_places(**kwargs) == False
+        assert functions.check_books_places(**kwargs) == False
 
     def test_incorrect_comp_places_booked_already_full(self):
         """Check already booked and wanted places to reserve
@@ -91,7 +84,6 @@ class TestCheckReservedPlaces:
         kwargs = {
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
-            'places_booked': 12,
             'places_wanted': 1
         }
-        assert server.check_books_places(**kwargs) == False
+        assert functions.check_books_places(**kwargs) == False
