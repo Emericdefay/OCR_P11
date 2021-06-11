@@ -73,6 +73,30 @@ class TestBook(Client):
                     assert rv.status_code == 302
                     # assert b'Something went wrong' in rv.data
 
+    def test_incorrect_competition(self, client):
+        """Wrong path with wrong competition"""
+        clubs = server.loadClubs()
+        competition = 'Bad Competition'
+        for club in clubs:
+            rv = client.get(
+                path=f"/book/{competition}/{club['name']}",
+                follow_redirects=True
+            )
+            assert rv.status_code == 200
+            assert b'Something went wrong' in rv.data
+
+    def test_incorrect_club(self, client):
+        """Wrong path with wrong club"""
+        club = 'Bad Club'
+        competitions = server.loadCompetitions()
+        for competition in competitions:
+            rv = client.get(
+                path=f"/book/{competition['name']}/{club}",
+                follow_redirects=True
+            )
+            assert rv.status_code == 200
+            assert b'Something went wrong' in rv.data
+
 
 class TestPurchasePlaces(Client):
     """Purchase Places tests"""

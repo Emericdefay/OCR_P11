@@ -6,12 +6,6 @@ sys.path.append('.')
 import pytest
 # Locals Libs:
 import server
-from server import (
-    substract_clubs_points as sub_club,
-    substract_comp_places as sub_comp,
-    check_books_places as chk_book,
-    futur_competition as futur_comp,
-)
 
 
 class Client:
@@ -52,60 +46,124 @@ class TestShowSummary(Client):
 
 class TestPurchasePlaces(Client):
     """Purchase places tests"""
-    def test_purchase_places(self, client):
+    def test_purchase_places_correct_club_and_comp_and_places(self, client):
         """Purchase places
-        Check if competition is in futur
-        Check if enough places in competition
-        Check if enough points from club"""
+        Correct execution"""
+        club = 'Simply Lift'
+        # Available points : 13
+        competition = 'Spring Festival'
+        # Available places : 25
+        nb_places = 12
+        awaited_places = 13
+        awaited_points = 1
+
         clubs = server.loadClubs()
         competitions = server.loadCompetitions()
+        comp = [c for c in competitions if c['name'] == competition]
+        club = [c for c in clubs if c['name'] == club]
+        
+        form = {'email': 'john@simplylift.co'}
+        client.post(path='/showSummary', data=form, follow_redirects=True)
 
-        for club in clubs:
-            for comp in competitions:
-                form = {
-                    'competition': f'{comp["name"]}',
-                    'club': f'{club["name"]}',
-                    'places': '1',
-                    }
-                rv = client.post(
-                    path='/purchasePlaces', data=form, follow_redirects=True
-                    )
-                
-                kwargs = {
-                'club_name': '',
-                'competition_name': '',
-                'places_booked': club['competitionsReserved'][comp['name']],
-                'places_wanted': form['places']
-                }
+        form = {
+            'competition': f'{comp["name"]}',
+            'club': f'{club["name"]}',
+            'places': nb_places,
 
-                still_book = chk_book(**kwargs)
+            }
+        rv = client.post(
+            path='/purchasePlaces', data=form, follow_redirects=True
+            )
 
-                time_comp = comp['date']
-                time_now = datetime.datetime.today()
+        update_places = bytes(f"Number of Places: {awaited_places}", 'utf-8')
+        update_points = bytes(f"available: {awaited_points}", 'utf-8')
+    
+        assert rv.status_code == 200
+        assert update_points in rv.data
+        assert update_places in rv.data
+        assert b'Great-booking complete!' in rv.data
 
-                still_comp = futur_comp(time_comp, time_now)
+    def test_purchase_places_too_many_places_reserved(self, client):
+        """Purchase places
+        Too many places reserved."""
+        club = 'Simply Lift'
+        # Available points : 13
+        competition = 'Spring Festival'
+        # Available places : 25
+        nb_places = 13
+        awaited_places = 25
+        awaited_points = 13
 
-                if still_book and still_comp:
-                    available_places = sub_comp(
-                        comp['numberOfPlaces'],
-                        form['places'])
-                    
-                    available_points = sub_club(
-                        club['points'],
-                        form['places'])
-                    
-                    if available_points and available_places:
-                        update_places = bytes(
-                            f"Number of Places: {available_places}", 'utf-8')
-                        update_points = bytes(
-                            f"available: {available_points}", 'utf-8')
-            
-                        assert rv.status_code == 200
-                        assert update_points in rv.data
-                        assert update_places in rv.data
-                    else:
-                        assert rv.status_code == 200
-                        assert b'Something went wrong' in rv.data
-                else:
-                    assert rv.status_code == 200
-                    assert b'Something went wrong' in rv.data
+        clubs = server.loadClubs()
+        competitions = server.loadCompetitions()
+        comp = [c for c in competitions if c['name'] == competition]
+        club = [c for c in clubs if c['name'] == club]
+
+        form = {'email': 'john@simplylift.co'}
+        client.post(path='/showSummary', data=form, follow_redirects=True)
+        form = {
+            'competition': f'{comp["name"]}',
+            'club': f'{club["name"]}',
+            'places': nb_places,
+
+            }
+        rv = client.post(
+            path='/purchasePlaces', data=form, follow_redirects=True
+            )
+
+        update_places = bytes(f"Number of Places: {awaited_places}", 'utf-8')
+        update_points = bytes(f"available: {awaited_points}", 'utf-8')
+
+        assert rv.status_code == 200
+        assert update_points in rv.data
+        assert update_places in rv.data
+        assert b'Something went wrong' in rv.data
+
+
+class TestDisplayBoardUpdate(Client):
+    """Display properly working tests"""
+    def test_update_points_then_check_board(self, client):
+        """Check display board when update points from club"""
+        club = 'Simply Lift'
+        # Available points : 13
+        competition = 'Spring Festival'
+        # Available places : 25
+        nb_places = 13
+        awaited_places = 25
+        awaited_points = 13
+
+        clubs = server.loadClubs()
+        competitions = server.loadCompetitions()
+        comp = [c for c in competitions if c['name'] == competition]
+        club = [c for c in clubs if c['name'] == club]
+
+        form = {'email': 'john@simplylift.co'}
+        client.post(path='/showSummary', data=form, follow_redirects=True)
+        form = {
+            'competition': f'{comp["name"]}',
+            'club': f'{club["name"]}',
+            'places': nb_places,
+
+            }
+        client.post(
+            path='/purchasePlaces', data=form, follow_redirects=True
+            )
+
+        rv = client.get(
+            path='/displayBoard', follow_redirects=True
+        )
+
+        update_points = bytes(f"{club}: {awaited_points} points", 'utf-8')
+
+        assert update_points in rv.data
+        
+
+class TestLoginLogout(Client):
+    """Login then Logout test"""
+    def test_login_logout(self, client):
+        """Check login/logout"""
+        form = {'email': 'john@simplylift.co'}
+        client.post(path='/', data=form, follow_redirects=True)
+        rv = client.get(path='/logout', follow_redirects=True)
+        assert rv.status_code == 200
+        assert b'Welcome to the GUDLFT Registration Portal!' in rv.data
