@@ -3,6 +3,7 @@ import datetime
 # Locals Libs:
 import server
 
+
 def substract_clubs_points(club_points: int, places_bought: int):
     """Substract the club points by places bought.
     Need to have more points than places bought
