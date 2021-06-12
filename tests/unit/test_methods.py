@@ -148,7 +148,7 @@ class TestPurchasePlaces(Client):
                }
         rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
         assert rv.status_code == 200
-        assert b'Something went wrong' in rv.data
+        assert b'Error:' in rv.data
 
     def test_correct_comp_incorrect_reserve_correct_club(self, client):
         """Purchase Places
@@ -164,13 +164,77 @@ class TestPurchasePlaces(Client):
                }
         rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
         assert rv.status_code == 200
+        assert b'Something went wrong' in rv.data
+
+    def test_old_comp_correct_reserve_from_correct_club(self, client):
+        """Purchase Places
+        old competition, correct reserve and correct club."""
+        form = {
+            'competition': 'Fall Classic',
+            # Place available : 13
+            # Competition status : already done
+            'club': 'Simply Lift',
+            # Points available : 13
+            'places': '12'
+            # Points bought : 12
+               }
+        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        assert rv.status_code == 200
+        assert b'Something went wrong' in rv.data
+
+    def test_old_comp_incorrect_reserve_from_incorrect_club(self, client):
+        """Purchase Places
+        old competition, incorrect reserve and incorrect club."""
+        form = {
+            'competition': 'Fall Classic',
+            # Place available : 13
+            # Competition status : already done
+            'club': 'Bad Club',
+            # Points available : x
+            'places': '13'
+            # Points bought : 13
+               }
+        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        assert rv.status_code == 200
         assert b'Error:' in rv.data
+
+    def test_old_comp_correct_reserve_incorrect_club(self, client):
+        """Purchase Places
+        old competition, correct reserve and incorrect club."""
+        form = {
+            'competition': 'Fall Classic',
+            # Place available : 13
+            # Competition status : already done
+            'club': 'Bad Club',
+            # Points available : x
+            'places': '12'
+            # Points bought : 12
+               }
+        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        assert rv.status_code == 200
+        assert b'Error:' in rv.data
+
+    def test_old_comp_incorrect_reserve_correct_club(self, client):
+        """Purchase Places
+        old competition, incorrect reserve and correct club."""
+        form = {
+            'competition': 'Fall Classic',
+            # Place available : 13
+            # Competition status : already done
+            'club': 'Iron Temple',
+            # Points available : 4
+            'places': '12'
+            # Points bought : 12
+               }
+        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        assert rv.status_code == 200
+        assert b'Something went wrong' in rv.data
 
     def test_incorrect_comp_correct_reserve_from_correct_club(self, client):
         """Purchase Places
-        Incorrect competition, correct reserve and correct club."""
+        incorrect competition, correct reserve and correct club."""
         form = {
-            'competition': 'Fall Classic',
+            'competition': 'Bad Comp',
             # Place available : 13
             # Competition status : already done
             'club': 'Simply Lift',
@@ -184,9 +248,9 @@ class TestPurchasePlaces(Client):
 
     def test_incorrect_comp_incorrect_reserve_from_incorrect_club(self, client):
         """Purchase Places
-        Incorrect competition, incorrect reserve and incorrect club."""
+        incorrect competition, incorrect reserve and incorrect club."""
         form = {
-            'competition': 'Fall Classic',
+            'competition': 'Bad Comp',
             # Place available : 13
             # Competition status : already done
             'club': 'Bad Club',
@@ -196,11 +260,11 @@ class TestPurchasePlaces(Client):
                }
         rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
         assert rv.status_code == 200
-        assert b'Something went wrong' in rv.data
+        assert b'Error:' in rv.data
 
     def test_incorrect_comp_correct_reserve_incorrect_club(self, client):
         """Purchase Places
-        Incorrect competition, correct reserve and incorrect club."""
+        incorrect competition, correct reserve and incorrect club."""
         form = {
             'competition': 'Bad Comp',
             # Place available : x
@@ -212,11 +276,11 @@ class TestPurchasePlaces(Client):
                }
         rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
         assert rv.status_code == 200
-        assert b'Something went wrong' in rv.data
+        assert b'Error:' in rv.data
 
     def test_incorrect_comp_incorrect_reserve_correct_club(self, client):
         """Purchase Places
-        Incorrect competition, incorrect reserve and correct club."""
+        incorrect competition, incorrect reserve and correct club."""
         form = {
             'competition': 'Bad Comp',
             # Place available : x
@@ -228,7 +292,7 @@ class TestPurchasePlaces(Client):
                }
         rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
         assert rv.status_code == 200
-        assert b'Something went wrong' in rv.data
+        assert b'Error:' in rv.data
 
 
 class TestDisplayBoard(Client):

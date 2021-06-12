@@ -45,6 +45,8 @@ def substract_comp_places(comp_places: int, places_bought: int):
 
 
 def check_books_places(
+    clubs: list,
+    competitions: list,
     competition_name: str,
     club_name: str,
     places_wanted: int
@@ -62,8 +64,6 @@ def check_books_places(
     if int(places_wanted) < 0:
         return False
 
-    clubs = server.loadClubs()
-    competitions = server.loadCompetitions()
     club = [c for c in clubs if c['name'] == club_name]
     comp = [c for c in competitions if c['name'] == competition_name]
 
@@ -71,9 +71,9 @@ def check_books_places(
         return False
 
     reserved = club[0]['competitionsReserved']
-
-    places_booked = [c for c in reserved if c['name'] == competition_name]
-    places_booked = 0 if not places_booked else places_booked
+    print(reserved)
+    places_booked = [int(c) for c in reserved if c['name'] == competition_name]
+    places_booked = 0 if not places_booked else int(places_booked)
     places_available = comp[0]['numberOfPlaces']
 
     if int(places_available) <= 0:
@@ -82,6 +82,7 @@ def check_books_places(
         return False
     if int(places_booked) + int(places_wanted) > 12:
         return False
+    print(reserved)
     return True
 
 
