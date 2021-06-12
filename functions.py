@@ -70,9 +70,11 @@ def check_books_places(
         return False
 
     reserved = club[0]['competitionsReserved']
-    print(reserved)
-    places_booked = [int(c) for c in reserved if c['name'] == competition_name]
-    places_booked = 0 if not places_booked else int(places_booked)
+    places_booked = 0
+    for competition, places in reserved.items():
+        if comp[0]['name'] == competition:
+            places_booked = places
+            break
     places_available = comp[0]['numberOfPlaces']
 
     if int(places_available) <= 0:
@@ -81,7 +83,6 @@ def check_books_places(
         return False
     if int(places_booked) + int(places_wanted) > 12:
         return False
-    print(reserved)
     return True
 
 

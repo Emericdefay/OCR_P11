@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from flask import (Flask,
                    render_template,
@@ -38,7 +39,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/showSummary', methods=['POST'])
+@app.route('/showSummary', methods=['POST', 'GET'])
 def showSummary():
     """Show the summary if email is registered.
     If not, redirect to '/' 
@@ -46,10 +47,14 @@ def showSummary():
     try:
         email = request.form['email']
         club = [club for club in clubs if club['email'] == email][0]
+        next_comps = [c for c in competitions if next_comp(c['date'])]
+        reservations = club['competitionsReserved']
         return render_template(
             'welcome.html',
             club=club,
-            competitions=competitions)
+            competitions=competitions,
+            next_competitions=next_comps,
+            reservations=reservations)
     except IndexError:
         flash("Sorry, that email wasn't found.")
         return redirect('/', 302)
@@ -62,20 +67,36 @@ def book(competition, club):
         found_club = [c for c in clubs if c['name'] == club][0]
         found_comp = [c for c in competitions if c['name'] == competition][0]
     except IndexError:
+        next_comps = [c for c in competitions if next_comp(c['date'])]
+        if club in clubs:
+            reservations = club['competitionsReserved']
+            flash("Something went wrong-please try again")
+            return render_template('welcome.html',
+                                club=club,
+                                competitions=competitions,
+                                next_competitions=next_comps,
+                                reservations=reservations)
+        else:
+            flash("Something went wrong-please try again")
+            return redirect("/logout")
+
+    competition_not_happened = next_comp(found_comp['date'])
+    if competition_not_happened:
+        points_available = int(found_club['points'])
+        return render_template('booking.html',
+                                club=found_club,
+                                competition=found_comp,
+                                max=min(points_available, 12))
+    else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html',
-                               club=club,
-                               competitions=competitions)
-    points_available = int(found_club['points'])
-    return render_template('booking.html',
-                            club=found_club,
-                            competition=found_comp,
-                            max=min(points_available, 12))
+        return redirect('/')
 
 
 @app.route('/purchasePlaces',methods=['POST'])
 def purchasePlaces():
-    """"""
+    """Purchase places from competition with club's points.
+    Check if club is able to buy those places.
+    Check if competition not happened yet."""
     try:
         form_comp = request.form['competition']
         form_club = request.form['club']
@@ -96,33 +117,47 @@ def purchasePlaces():
                            club_name,
                            places_required)
     
-    if able_to_buy:
+    competition_not_happened = next_comp(competition['date'])
+
+    if able_to_buy and competition_not_happened:
         comp_places = int(competition['numberOfPlaces'])
         places_still_av = sub_comp(comp_places, places_required)
         points_club = sub_club(club['points'], places_required)
-        print(places_still_av, points_club)
         if places_still_av and points_club:
             competition['numberOfPlaces'] = places_still_av
             if comp_name in club['competitionsReserved']:
                 club['competitionsReserved'][comp_name] += places_required
-                print(club['competitionsReserved'])
             else:
                 club['competitionsReserved'][comp_name] = 0
-
+            
+            next_comps = [c for c in competitions if next_comp(c['date'])]
+            reservations = club['competitionsReserved']
             flash(f'Confirmation: {places_required} places reserved.')
             return render_template('welcome.html',
                                    club=club,
-                                   competitions=competitions)
+                                   competitions=competitions,
+                                   next_competitions=next_comps,
+                                   reservations=reservations)
         else:
+                
+            next_comps = [c for c in competitions if next_comp(c['date'])]
+            reservations = club['competitionsReserved']
+            
             flash('Something went wrong-please try again')
             return render_template('welcome.html',
                                    club=club,
-                                   competitions=competitions)
+                                   competitions=competitions,
+                                   next_competitions=next_comps,
+                                   reservations=reservations)
     else:
+        next_comps = [c for c in competitions if next_comp(c['date'])]
+        reservations = club['competitionsReserved']
         flash('Something went wrong-please try again')
         return render_template('welcome.html',
-                                   club=club,
-                                   competitions=competitions)
+                               club=club,
+                               competitions=competitions,
+                               next_competitions=next_comps,
+                               reservations=reservations)
 
 
 # TODO: Add route for points display
