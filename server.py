@@ -58,17 +58,19 @@ def showSummary():
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
     """"""
-    found_club = [c for c in clubs if c['name'] == club][0]
-    found_comp = [c for c in competitions if c['name'] == competition][0]
-    if found_club and found_comp:
-        return render_template('booking.html',
-                                club=found_club,
-                                competition=found_comp)
-    else:
+    try:
+        found_club = [c for c in clubs if c['name'] == club][0]
+        found_comp = [c for c in competitions if c['name'] == competition][0]
+    except IndexError:
         flash("Something went wrong-please try again")
         return render_template('welcome.html',
                                club=club,
                                competitions=competitions)
+    points_available = int(found_club['points'])
+    return render_template('booking.html',
+                            club=found_club,
+                            competition=found_comp,
+                            max=min(points_available, 12))
 
 
 @app.route('/purchasePlaces',methods=['POST'])

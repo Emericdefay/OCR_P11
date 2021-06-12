@@ -56,8 +56,9 @@ class TestShowSummary(Client):
 
 class TestBook(Client):
     """Book tests"""
-    def test_book_on_futur_comp(self, client):
-        """Book on futur competitions only"""
+    def test_book_on_every_comp(self, client):
+        """Book on every competitions
+        Verifying Book Place button doesn't appear on past comp"""
         # Get competitions
         competitions = server.loadCompetitions()
         clubs = server.loadClubs()
@@ -74,6 +75,27 @@ class TestBook(Client):
                 else:
                     assert rv.status_code == 302
                     # assert b'Something went wrong' in rv.data
+
+    def test_past_competition(self, client):
+        """Past competition try book"""
+        club = 'Simply Lift'
+        competition = 'Fall Classic'
+
+        rv = client.get(
+            path=f"/book/{competition}/{club}"
+        )
+        assert rv.status_code == 302
+
+    def test_next_competition(self, client):
+        """Next competition"""
+        club = 'Simply Lift'
+        competition = 'Spring Festival'
+        rv = client.get(
+            path=f"/book/{competition}/{club}",
+            follow_redirects=True
+        )
+        assert rv.status_code == 200
+        assert b'How many places?' in rv.data
 
     def test_incorrect_competition(self, client):
         """Wrong path with wrong competition"""
