@@ -1,7 +1,6 @@
 # Std Libs:
 import datetime
 # Locals Libs:
-import server
 
 
 def substract_clubs_points(club_points: int, places_bought: int):
@@ -86,12 +85,13 @@ def check_books_places(
     return True
 
 
-def futur_competition(date_to_check):
+def futur_competition(date_to_check: str):
     """Check if competition is still in future.
 
     Args:
         - date_to_check (str) : Date of competition
     """
+    print(date_to_check)
     try:
         date = datetime.datetime.strptime(date_to_check,
                                           '%Y-%m-%d %H:%M:%S')
