@@ -4,6 +4,7 @@ import sys
 sys.path.append('.')
 # External Libs:
 import pytest
+import flask
 # Locals Libs:
 import server
 
@@ -49,7 +50,8 @@ class TestShowSummary(Client):
         form = {'email': 'not@authorized.secretary'}
         rv = client.post(path='/showSummary', data=form, follow_redirects=True)
         assert rv.status_code == 200
-        assert b"Sorry, that email wasn't found." not in rv.data
+        assert b"Sorry, that email wasn&#39;t found." in rv.data
+        assert flask.request.path == '/'
 
 
 class TestBook(Client):
