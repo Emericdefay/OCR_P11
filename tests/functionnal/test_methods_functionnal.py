@@ -21,6 +21,8 @@ class Client:
         """Set a client test"""
         server.app.config['TESTING'] = True
         server.app.config['SERVER_NAME'] = 'TEST'
+        server.clubs =  server.loadClubs()
+        server.competitions = server.loadCompetitions()
 
         with server.app.test_client() as client:
             with server.app.app_context():
@@ -31,7 +33,7 @@ class Client:
 
 class TestPurchasePlaces(Client):
     """Purchase places tests"""
-    def test_purchase_places(self, client):
+    def test_purchase_places_try_all(self, client):
         """Purchase places
         Check if competition is in futur
         Check if enough places in competition
@@ -51,8 +53,10 @@ class TestPurchasePlaces(Client):
                     )
                 
                 kwargs = {
-                'club_name': '',
-                'competition_name': '',
+                'clubs': clubs,
+                'competitions': competitions,
+                'club_name': club['name'],
+                'competition_name': comp['name'],
                 'places_wanted': form['places']
                 }
 
@@ -77,12 +81,15 @@ class TestPurchasePlaces(Client):
                         update_points = bytes(
                             f"available: {available_points}", 'utf-8')
             
+                        print(rv.data)
                         assert rv.status_code == 200
                         assert update_points in rv.data
                         assert update_places in rv.data
                     else:
+                        print(rv.data)
                         assert rv.status_code == 200
                         assert b'Something went wrong' in rv.data
                 else:
+                    print(rv.data)
                     assert rv.status_code == 200
                     assert b'Something went wrong' in rv.data

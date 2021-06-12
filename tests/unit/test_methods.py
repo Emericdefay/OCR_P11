@@ -11,11 +11,12 @@ import server
 
 class Client:
     """Client app class"""
-    @pytest.fixture
+    @pytest.fixture(scope='function')
     def client(self):
         """Set a client test"""
-        server.app.config['TESTING'] = True
-        server.app.config['SERVER_NAME'] = 'TEST'
+        server.app.testing = True
+        server.clubs =  server.loadClubs()
+        server.competitions = server.loadCompetitions()
 
         with server.app.test_client() as client:
             with server.app.app_context():
@@ -82,9 +83,11 @@ class TestBook(Client):
         competition = 'Fall Classic'
 
         rv = client.get(
-            path=f"/book/{competition}/{club}"
+            path=f"/book/{competition}/{club}",
+            follow_redirects=True
         )
-        assert rv.status_code == 302
+        assert rv.status_code == 200
+        assert b'Something went wrong' in rv.data
 
     def test_next_competition(self, client):
         """Next competition"""
@@ -136,9 +139,14 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
+        
         assert rv.status_code == 200
-        assert b'Confirmation:' in rv.data
+        print(rv.data)
+        assert b"<li>Confirmation:" in rv.data
 
     def test_correct_club_incorrect_reserve_incorrect_club(self, client):
         """Purchase Places
@@ -152,7 +160,10 @@ class TestPurchasePlaces(Client):
             'places': '13'
             # Points bought : 13
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 
@@ -168,7 +179,10 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 
@@ -184,7 +198,10 @@ class TestPurchasePlaces(Client):
             'places': '13'
             # Points bought : 13
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Something went wrong' in rv.data
 
@@ -200,7 +217,10 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Something went wrong' in rv.data
 
@@ -216,7 +236,10 @@ class TestPurchasePlaces(Client):
             'places': '13'
             # Points bought : 13
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 
@@ -232,7 +255,10 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 
@@ -248,7 +274,10 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Something went wrong' in rv.data
 
@@ -264,11 +293,14 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 
-    def test_incorrect_comp_incorrect_reserve_from_incorrect_club(self, client):
+    def test_incorrect_comp_incorrect_reserve_incorrect_club(self, client):
         """Purchase Places
         incorrect competition, incorrect reserve and incorrect club."""
         form = {
@@ -280,7 +312,10 @@ class TestPurchasePlaces(Client):
             'places': '13'
             # Points bought : 13
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 
@@ -296,7 +331,10 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 
@@ -312,7 +350,10 @@ class TestPurchasePlaces(Client):
             'places': '12'
             # Points bought : 12
                }
-        rv = client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
         assert rv.status_code == 200
         assert b'Error:' in rv.data
 

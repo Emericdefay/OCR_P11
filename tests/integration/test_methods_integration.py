@@ -15,6 +15,8 @@ class Client:
         """Set a client test"""
         server.app.config['TESTING'] = True
         server.app.config['SERVER_NAME'] = 'TEST'
+        server.clubs =  server.loadClubs()
+        server.competitions = server.loadCompetitions()
 
         with server.app.test_client() as client:
             with server.app.app_context():
@@ -36,7 +38,7 @@ class TestShowSummary(Client):
                                                    '%Y-%m-%d %H:%M:%S')
             comp = competition['name'].replace(" ", "%20")
             strg = bytes(f'/{comp}/{club}">Book Places</a>', 'utf-8')
-            if comp_date < datetime.datetime.today():
+            if comp_date > datetime.datetime.today():
                 assert rv.status_code == 200
                 assert strg in rv.data
             else:
