@@ -5,6 +5,7 @@ sys.path.append('.')
 import pytest
 # Locals Libs:
 import functions
+import server
 
 
 class TestCheckReservedPlaces:
@@ -13,6 +14,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition, correct booked & correct wanted places."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
             'places_wanted': 1
@@ -23,6 +26,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition, full booked and too many places wanted."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
             'places_wanted': 13
@@ -33,6 +38,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition, no booked but too many places wanted."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
             'places_wanted': 13
@@ -43,6 +50,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         With correct competition but full booked and one place wanted."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Spring Festival',
             'places_wanted': 1
@@ -52,6 +61,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, correct booked and correct wanted places."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
             'places_wanted': 1
@@ -62,6 +73,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, full booked and too many places wanted."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
             'places_wanted': 13
@@ -72,6 +85,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, no booked and too many wanted places."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
             'places_wanted': 13
@@ -82,6 +97,8 @@ class TestCheckReservedPlaces:
         """Check already booked and wanted places to reserve
         Incorrect competition, full booked and one place wanted."""
         kwargs = {
+            'clubs': server.loadClubs(),
+            'competitions': server.loadCompetitions(),
             'club_name': 'Simply Lift',
             'competition_name': 'Bad Comp',
             'places_wanted': 1

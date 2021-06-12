@@ -5,6 +5,10 @@ from flask import (Flask,
                    redirect,
                    flash,
                    url_for)
+from functions import (substract_clubs_points as sub_club,
+                       substract_comp_places as sub_comp,
+                       check_books_places as chk_book,
+                       futur_competition as next_comp)
 
 
 def loadClubs():
@@ -52,26 +56,71 @@ def showSummary():
 
 
 @app.route('/book/<competition>/<club>')
-def book(competition,club):
+def book(competition, club):
     """"""
-    foundClub = [c for c in clubs if c['name'] == club][0]
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
-    if foundClub and foundCompetition:
-        return render_template('booking.html',club=foundClub,competition=foundCompetition)
+    found_club = [c for c in clubs if c['name'] == club][0]
+    found_comp = [c for c in competitions if c['name'] == competition][0]
+    if found_club and found_comp:
+        return render_template('booking.html',
+                                club=found_club,
+                                competition=found_comp)
     else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
+        return render_template('welcome.html',
+                               club=club,
+                               competitions=competitions)
 
 
 @app.route('/purchasePlaces',methods=['POST'])
 def purchasePlaces():
     """"""
-    competition = [c for c in competitions if c['name'] == request.form['competition']][0]
-    club = [c for c in clubs if c['name'] == request.form['club']][0]
-    placesRequired = int(request.form['places'])
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    flash('Great-booking complete!')
-    return render_template('welcome.html', club=club, competitions=competitions)
+    try:
+        form_comp = request.form['competition']
+        form_club = request.form['club']
+        competition = [c for c in competitions if c['name'] == form_comp][0]
+        club = [c for c in clubs if c['name'] == form_club][0]
+    except IndexError:
+        flash('Error: try to access unknown path.')
+        return redirect('/', 302)
+    
+    comp_name = competition['name']
+    club_name = club['name']
+    
+    places_required = int(request.form['places'])
+
+    able_to_buy = chk_book(clubs,
+                           competitions,
+                           comp_name,
+                           club_name,
+                           places_required)
+    
+    if able_to_buy:
+        comp_places = int(competition['numberOfPlaces'])
+        places_still_av = sub_comp(comp_places, places_required)
+        points_club = sub_club(club['points'], places_required)
+        print(places_still_av, points_club)
+        if places_still_av and points_club:
+            competition['numberOfPlaces'] = places_still_av
+            if comp_name in club['competitionsReserved']:
+                club['competitionsReserved'][comp_name] += places_required
+                print(club['competitionsReserved'])
+            else:
+                club['competitionsReserved'][comp_name] = 0
+
+            flash(f'Confirmation: {places_required} places reserved.')
+            return render_template('welcome.html',
+                                   club=club,
+                                   competitions=competitions)
+        else:
+            flash('Something went wrong-please try again')
+            return render_template('welcome.html',
+                                   club=club,
+                                   competitions=competitions)
+    else:
+        flash('Something went wrong-please try again')
+        return render_template('welcome.html',
+                                   club=club,
+                                   competitions=competitions)
 
 
 # TODO: Add route for points display

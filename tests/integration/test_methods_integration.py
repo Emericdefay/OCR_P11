@@ -66,8 +66,8 @@ class TestPurchasePlaces(Client):
         client.post(path='/showSummary', data=form, follow_redirects=True)
 
         form = {
-            'competition': f'{comp["name"]}',
-            'club': f'{club["name"]}',
+            'competition': f'{comp[0]["name"]}',
+            'club': f'{club[0]["name"]}',
             'places': nb_places,
 
             }
@@ -81,7 +81,7 @@ class TestPurchasePlaces(Client):
         assert rv.status_code == 200
         assert update_points in rv.data
         assert update_places in rv.data
-        assert b'Great-booking complete!' in rv.data
+        assert b'Confirmation:' in rv.data
 
     def test_purchase_places_too_many_places_reserved(self, client):
         """Purchase places
@@ -102,8 +102,8 @@ class TestPurchasePlaces(Client):
         form = {'email': 'john@simplylift.co'}
         client.post(path='/showSummary', data=form, follow_redirects=True)
         form = {
-            'competition': f'{comp["name"]}',
-            'club': f'{club["name"]}',
+            'competition': f'{comp[0]["name"]}',
+            'club': f'{club[0]["name"]}',
             'places': nb_places,
 
             }

@@ -53,16 +53,14 @@ class TestPurchasePlaces(Client):
                 kwargs = {
                 'club_name': '',
                 'competition_name': '',
-                'places_booked': club['competitionsReserved'][comp['name']],
                 'places_wanted': form['places']
                 }
 
                 still_book = chk_book(**kwargs)
 
                 time_comp = comp['date']
-                time_now = datetime.datetime.today()
 
-                still_comp = futur_comp(time_comp, time_now)
+                still_comp = futur_comp(time_comp)
 
                 if still_book and still_comp:
                     available_places = sub_comp(
