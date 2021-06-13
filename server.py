@@ -65,20 +65,21 @@ def book(competition, club):
     """"""
     try:
         found_club = [c for c in clubs if c['name'] == club][0]
+    except IndexError:
+        flash("Something went wrong-please try again")
+        return redirect("/")
+    try:
         found_comp = [c for c in competitions if c['name'] == competition][0]
     except IndexError:
         next_comps = [c for c in competitions if next_comp(c['date'])]
-        if club in clubs:
-            reservations = club['competitionsReserved']
-            flash("Something went wrong-please try again")
-            return render_template('welcome.html',
-                                club=club,
-                                competitions=competitions,
-                                next_competitions=next_comps,
-                                reservations=reservations)
-        else:
-            flash("Something went wrong-please try again")
-            return redirect("/logout")
+        print(found_club['competitionsReserved'])
+        reservations = found_club['competitionsReserved']
+        flash("Something went wrong-please try again")
+        return render_template('welcome.html',
+                            club=club,
+                            competitions=competitions,
+                            next_competitions=next_comps,
+                            reservations=reservations)
 
     competition_not_happened = next_comp(found_comp['date'])
     if competition_not_happened:
@@ -125,10 +126,11 @@ def purchasePlaces():
         points_club = sub_club(club['points'], places_required)
         if places_still_av and points_club:
             competition['numberOfPlaces'] = places_still_av
+            club['points'] = points_club
             if comp_name in club['competitionsReserved']:
                 club['competitionsReserved'][comp_name] += places_required
             else:
-                club['competitionsReserved'][comp_name] = 0
+                club['competitionsReserved'][comp_name] = places_required
             
             next_comps = [c for c in competitions if next_comp(c['date'])]
             reservations = club['competitionsReserved']
