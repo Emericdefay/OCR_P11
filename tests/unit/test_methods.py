@@ -109,6 +109,7 @@ class TestBook(Client):
                 path=f"/book/{competition}/{club['name']}",
                 follow_redirects=True
             )
+
             assert rv.status_code == 200
             assert b'Something went wrong' in rv.data
 
@@ -130,6 +131,7 @@ class TestPurchasePlaces(Client):
     def test_correct_comp_correct_reserve_correct_club(self, client):
         """Purchase Places
         Correct competition, correct reserve and correct club."""
+
         form = {
             'competition': 'Spring Festival',
             # Place available : 25
@@ -143,10 +145,98 @@ class TestPurchasePlaces(Client):
             path='/purchasePlaces',
             data=form,
             follow_redirects=True)
-        
+
+        cp_name = form['competition']
+        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        assert int(competition['numberOfPlaces']) == 13
+
+        cl_name = form['club']
+        club = [c for c in server.clubs if c['name']==cl_name][0]
+        assert int(club['points']) == 1
+        print(club['competitionsReserved'])
+        assert int(club['competitionsReserved']['Spring Festival']) == 12
+
         assert rv.status_code == 200
-        print(rv.data)
         assert b"<li>Confirmation:" in rv.data
+
+    def test_multiple_correct_purchase(self, client):
+        """Multiple purchase Places
+        Correct competition, correct reserve and correct club."""
+
+        form = {
+            'competition': 'Spring Festival',
+            # Place available : 25
+            # Competition status : In preparation
+            'club': 'Simply Lift',
+            # Points available : 13
+            'places': '1'
+            # Points bought : 1
+               }
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
+
+        cp_name = form['competition']
+        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        assert int(competition['numberOfPlaces']) == 24
+
+        cl_name = form['club']
+        club = [c for c in server.clubs if c['name']==cl_name][0]
+        assert int(club['points']) == 12
+        print(club['competitionsReserved'])
+        assert int(club['competitionsReserved']['Spring Festival']) == 1
+
+        assert rv.status_code == 200
+        assert b"<li>Confirmation:" in rv.data
+
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
+
+        cp_name = form['competition']
+        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        assert int(competition['numberOfPlaces']) == 23
+
+        cl_name = form['club']
+        club = [c for c in server.clubs if c['name']==cl_name][0]
+        assert int(club['points']) == 11
+        print(club['competitionsReserved'])
+        assert int(club['competitionsReserved']['Spring Festival']) == 2
+
+        assert rv.status_code == 200
+        assert b"<li>Confirmation:" in rv.data
+
+    def test_multiple_purchase_but_not_enough_points(self, client):
+        """Purchase Places but not enough points
+        Correct competition, incorrect reserve and correct club."""
+
+        form = {
+            'competition': 'Spring Festival',
+            # Place available : 25
+            # Competition status : In preparation
+            'club': 'Iron Temple',
+            # Points available : 4
+            'places': '12'
+            # Points bought : 12
+               }
+        rv = client.post(
+            path='/purchasePlaces',
+            data=form,
+            follow_redirects=True)
+
+        cp_name = form['competition']
+        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        assert int(competition['numberOfPlaces']) == 25
+
+        cl_name = form['club']
+        club = [c for c in server.clubs if c['name']==cl_name][0]
+        assert int(club['points']) == 4
+
+        assert rv.status_code == 200
+        assert b"Something went wrong" in rv.data
+
 
     def test_correct_club_incorrect_reserve_incorrect_club(self, client):
         """Purchase Places
