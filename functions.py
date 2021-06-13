@@ -92,7 +92,6 @@ def futur_competition(date_to_check: str):
     Args:
         - date_to_check (str) : Date of competition
     """
-    print(date_to_check)
     try:
         date = datetime.datetime.strptime(date_to_check,
                                           '%Y-%m-%d %H:%M:%S')

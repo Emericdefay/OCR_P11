@@ -134,10 +134,8 @@ class TestDisplayBoardUpdate(Client):
         awaited_places = 25
         awaited_points = 13
 
-        clubs = server.loadClubs()
-        competitions = server.loadCompetitions()
-        comp = [c for c in competitions if c['name'] == competition]
-        club = [c for c in clubs if c['name'] == club]
+        comp = [c for c in server.competitions if c['name'] == competition][0]
+        club = [c for c in server.clubs if c['name'] == club][0]
 
         form = {'email': 'john@simplylift.co'}
         client.post(path='/showSummary', data=form, follow_redirects=True)

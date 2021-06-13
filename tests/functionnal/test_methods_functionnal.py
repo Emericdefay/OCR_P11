@@ -31,65 +31,15 @@ class Client:
             yield client
 
 
-class TestPurchasePlaces(Client):
+class TestFunctionnal(Client):
     """Purchase places tests"""
-    def test_purchase_places_try_all(self, client):
-        """Purchase places
-        Check if competition is in futur
-        Check if enough places in competition
-        Check if enough points from club"""
-        clubs = server.loadClubs()
-        competitions = server.loadCompetitions()
-
-        for club in clubs:
-            for comp in competitions:
-                form = {
-                    'competition': f'{comp["name"]}',
-                    'club': f'{club["name"]}',
-                    'places': '1',
-                    }
-                rv = client.post(
-                    path='/purchasePlaces', data=form, follow_redirects=True
-                    )
-                
-                kwargs = {
-                'clubs': clubs,
-                'competitions': competitions,
-                'club_name': club['name'],
-                'competition_name': comp['name'],
-                'places_wanted': form['places']
-                }
-
-                still_book = chk_book(**kwargs)
-
-                time_comp = comp['date']
-
-                still_comp = futur_comp(time_comp)
-
-                if still_book and still_comp:
-                    available_places = sub_comp(
-                        comp['numberOfPlaces'],
-                        form['places'])
-                    
-                    available_points = sub_club(
-                        club['points'],
-                        form['places'])
-                    
-                    if available_points and available_places:
-                        update_places = bytes(
-                            f"Number of Places: {available_places}", 'utf-8')
-                        update_points = bytes(
-                            f"available: {available_points}", 'utf-8')
-            
-                        print(rv.data)
-                        assert rv.status_code == 200
-                        assert update_points in rv.data
-                        assert update_places in rv.data
-                    else:
-                        print(rv.data)
-                        assert rv.status_code == 200
-                        assert b'Something went wrong' in rv.data
-                else:
-                    print(rv.data)
-                    assert rv.status_code == 200
-                    assert b'Something went wrong' in rv.data
+    def test_connect_and_purchase_correct(self, client):
+        """
+        1. login
+        2. Book place on Spring Festival
+        3. Reserve 12 places
+        4. Check cannot click on Book place one more time
+        5. Check Display Board
+        6. Logout
+        """
+        pass
