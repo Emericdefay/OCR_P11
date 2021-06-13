@@ -1,6 +1,5 @@
 # Std Libs:
 import datetime
-# Locals Libs:
 
 
 def substract_clubs_points(club_points: int, places_bought: int):
@@ -49,9 +48,9 @@ def check_books_places(
     competition_name: str,
     club_name: str,
     places_wanted: int
-    ):
+                       ):
     """Check if places reserved aren't higher than 12.
-    
+
     Args:
         - competition_name (str) : Name of the competition
         - club_name (str) : Name of the club
@@ -59,7 +58,7 @@ def check_books_places(
     """
     if int(places_wanted) > 12:
         return False
-    
+
     if int(places_wanted) < 0:
         return False
 
