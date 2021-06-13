@@ -1,12 +1,12 @@
 # Std Libs:
 import datetime
 import sys
-sys.path.append('.')
 # External Libs:
-import pytest
+import pytest  # noqa: F401
 import flask
 # Locals Libs:
 import server
+sys.path.append('.')
 
 
 class Client:
@@ -15,7 +15,7 @@ class Client:
     def client(self):
         """Set a client test"""
         server.app.testing = True
-        server.clubs =  server.loadClubs()
+        server.clubs = server.loadClubs()
         server.competitions = server.loadCompetitions()
 
         with server.app.test_client() as client:
@@ -147,13 +147,13 @@ class TestPurchasePlaces(Client):
             follow_redirects=True)
 
         cp_name = form['competition']
-        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        competition = [
+            c for c in server.competitions if c['name'] == cp_name][0]
         assert int(competition['numberOfPlaces']) == 13
 
         cl_name = form['club']
-        club = [c for c in server.clubs if c['name']==cl_name][0]
+        club = [c for c in server.clubs if c['name'] == cl_name][0]
         assert int(club['points']) == 1
-        print(club['competitionsReserved'])
         assert int(club['competitionsReserved']['Spring Festival']) == 12
 
         assert rv.status_code == 200
@@ -178,13 +178,13 @@ class TestPurchasePlaces(Client):
             follow_redirects=True)
 
         cp_name = form['competition']
-        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        competition = [
+            c for c in server.competitions if c['name'] == cp_name][0]
         assert int(competition['numberOfPlaces']) == 24
 
         cl_name = form['club']
-        club = [c for c in server.clubs if c['name']==cl_name][0]
+        club = [c for c in server.clubs if c['name'] == cl_name][0]
         assert int(club['points']) == 12
-        print(club['competitionsReserved'])
         assert int(club['competitionsReserved']['Spring Festival']) == 1
 
         assert rv.status_code == 200
@@ -196,13 +196,13 @@ class TestPurchasePlaces(Client):
             follow_redirects=True)
 
         cp_name = form['competition']
-        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        competition = [
+            c for c in server.competitions if c['name'] == cp_name][0]
         assert int(competition['numberOfPlaces']) == 23
 
         cl_name = form['club']
-        club = [c for c in server.clubs if c['name']==cl_name][0]
+        club = [c for c in server.clubs if c['name'] == cl_name][0]
         assert int(club['points']) == 11
-        print(club['competitionsReserved'])
         assert int(club['competitionsReserved']['Spring Festival']) == 2
 
         assert rv.status_code == 200
@@ -227,16 +227,16 @@ class TestPurchasePlaces(Client):
             follow_redirects=True)
 
         cp_name = form['competition']
-        competition = [c for c in server.competitions if c['name']==cp_name][0]
+        competition = [
+            c for c in server.competitions if c['name'] == cp_name][0]
         assert int(competition['numberOfPlaces']) == 25
 
         cl_name = form['club']
-        club = [c for c in server.clubs if c['name']==cl_name][0]
+        club = [c for c in server.clubs if c['name'] == cl_name][0]
         assert int(club['points']) == 4
 
         assert rv.status_code == 200
         assert b"Something went wrong" in rv.data
-
 
     def test_correct_club_incorrect_reserve_incorrect_club(self, client):
         """Purchase Places
@@ -453,8 +453,14 @@ class TestDisplayBoard(Client):
     def test_display_board(self, client):
         """Display Board without login"""
         rv = client.get(path='/displayBoard')
+        clubs = server.clubs
+
+        for club in clubs:
+            assert bytes(club['name'], 'utf-8') in rv.data
+            assert bytes(club['points'], 'utf-8') in rv.data
+
         assert rv.status_code == 200
-        assert b'List of clubs' in rv.data
+        assert b'Clubs' in rv.data
 
 
 class TestLogout(Client):

@@ -1,10 +1,10 @@
 # Std Libs:
 import sys
-sys.path.append('.')
 # External Libs:
-import pytest
+import pytest  # noqa: F401
 # Locals Libs:
 import functions
+sys.path.append('.')
 
 
 class TestSubstractionsClubPoints:
@@ -25,8 +25,8 @@ class TestSubstractionsClubPoints:
             'club_points': 13,
             'places_bought': 13
         }
-        assert functions.substract_clubs_points(**kwargs) == False
-    
+        assert functions.substract_clubs_points(**kwargs) is False
+
     def test_substraction_clubs_points_not_enough_points_to_buy_places(self):
         """Substraction of club's points
         But not enought points from club."""
@@ -34,8 +34,8 @@ class TestSubstractionsClubPoints:
             'club_points': 10,
             'places_bought': 12
         }
-        assert functions.substract_clubs_points(**kwargs) == False
-    
+        assert functions.substract_clubs_points(**kwargs) is False
+
     def test_substraction_clubs_points_not_enough_points_to_many_places(self):
         """Substraction of club's points
         But to many places bought with not enough points from club."""
@@ -43,8 +43,8 @@ class TestSubstractionsClubPoints:
             'club_points': 10,
             'places_bought': 13
         }
-        assert functions.substract_clubs_points(**kwargs) == False
-    
+        assert functions.substract_clubs_points(**kwargs) is False
+
 
 class TestSubstractionCompPlaces:
     """Substract Competition places tests"""
@@ -64,7 +64,7 @@ class TestSubstractionCompPlaces:
             'comp_places': 13,
             'places_bought': 13
         }
-        assert functions.substract_comp_places(**kwargs) == False
+        assert functions.substract_comp_places(**kwargs) is False
 
     def test_substraction_not_enough_places_correct_reserve(self):
         """Substraction of competition places
@@ -73,7 +73,7 @@ class TestSubstractionCompPlaces:
             'comp_places': 11,
             'places_bought': 12
         }
-        assert functions.substract_comp_places(**kwargs) == False
+        assert functions.substract_comp_places(**kwargs) is False
 
     def test_substraction_not_place_to_reserve(self):
         """Substraction of competition places
@@ -82,4 +82,4 @@ class TestSubstractionCompPlaces:
             'comp_places': 0,
             'places_bought': 1
         }
-        assert functions.substract_comp_places(**kwargs) == False
+        assert functions.substract_comp_places(**kwargs) is False

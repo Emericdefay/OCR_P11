@@ -1,10 +1,10 @@
 # Std Libs:
 import sys
-sys.path.append('.')
 # External libs:
-import pytest
+import pytest  # noqa: F401
 # Locals Libs:
 from server import loadClubs, loadCompetitions
+sys.path.append('.')
 
 
 class TestJSON:
@@ -16,19 +16,19 @@ class TestJSON:
                 'name': 'Simply Lift',
                 'email': 'john@simplylift.co',
                 'points': '13',
-                'competitionsReserved':{}
+                'competitionsReserved': {}
             },
             {
                 'name': 'Iron Temple',
                 'email': 'admin@irontemple.com',
                 'points': '4',
-                'competitionsReserved':{}
+                'competitionsReserved': {}
             },
             {
                 'name': 'She Lifts',
                 'email': 'kate@shelifts.co.uk',
                 'points': '12',
-                'competitionsReserved':{}
+                'competitionsReserved': {}
             }
         ]
         assert loadClubs() == clubs

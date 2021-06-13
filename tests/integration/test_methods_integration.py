@@ -1,11 +1,11 @@
 # Std Libs:
 import datetime
 import sys
-sys.path.append('.')
 # External Libs:
-import pytest
+import pytest  # noqa: F401
 # Locals Libs:
 import server
+sys.path.append('.')
 
 
 class Client:
@@ -15,7 +15,7 @@ class Client:
         """Set a client test"""
         server.app.config['TESTING'] = True
         server.app.config['SERVER_NAME'] = 'TEST'
-        server.clubs =  server.loadClubs()
+        server.clubs = server.loadClubs()
         server.competitions = server.loadCompetitions()
 
         with server.app.test_client() as client:
@@ -63,7 +63,7 @@ class TestPurchasePlaces(Client):
         competitions = server.loadCompetitions()
         comp = [c for c in competitions if c['name'] == competition]
         club = [c for c in clubs if c['name'] == club]
-        
+
         form = {'email': 'john@simplylift.co'}
         client.post(path='/showSummary', data=form, follow_redirects=True)
 
@@ -79,7 +79,7 @@ class TestPurchasePlaces(Client):
 
         update_places = bytes(f"Number of Places: {awaited_places}", 'utf-8')
         update_points = bytes(f"available: {awaited_points}", 'utf-8')
-    
+
         assert rv.status_code == 200
         assert update_points in rv.data
         assert update_places in rv.data
@@ -124,14 +124,13 @@ class TestPurchasePlaces(Client):
 
 class TestDisplayBoardUpdate(Client):
     """Display properly working tests"""
-    def test_update_points_then_check_board(self, client):
+    def test_update_points_then_check_board_too_much_reserved(self, client):
         """Check display board when update points from club"""
         club = 'Simply Lift'
         # Available points : 13
         competition = 'Spring Festival'
         # Available places : 25
         nb_places = 13
-        awaited_places = 25
         awaited_points = 13
 
         comp = [c for c in server.competitions if c['name'] == competition][0]
@@ -153,10 +152,41 @@ class TestDisplayBoardUpdate(Client):
             path='/displayBoard', follow_redirects=True
         )
 
-        update_points = bytes(f"{club}: {awaited_points} points", 'utf-8')
+        update_points = bytes(f"{club['name']} : {awaited_points}", 'utf-8')
 
         assert update_points in rv.data
-        
+
+    def test_update_points_then_check_board_12_places_reserved(self, client):
+        """Check display board when update points from club"""
+        club = 'Simply Lift'
+        # Available points : 13
+        competition = 'Spring Festival'
+        # Available places : 25
+        nb_places = 12
+        awaited_points = 1
+
+        comp = [c for c in server.competitions if c['name'] == competition][0]
+        club = [c for c in server.clubs if c['name'] == club][0]
+
+        form = {'email': 'john@simplylift.co'}
+        client.post(path='/showSummary', data=form, follow_redirects=True)
+        form = {
+            'competition': f'{comp["name"]}',
+            'club': f'{club["name"]}',
+            'places': nb_places,
+
+            }
+        client.post(
+            path='/purchasePlaces', data=form, follow_redirects=True
+            )
+
+        rv = client.get(
+            path='/displayBoard', follow_redirects=True
+        )
+
+        update_points = bytes(f"{club['name']} : {awaited_points}", 'utf-8')
+        assert update_points in rv.data
+
 
 class TestLoginLogout(Client):
     """Login then Logout test"""
