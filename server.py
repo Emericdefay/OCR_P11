@@ -89,10 +89,20 @@ def book(competition, club):
     competition_not_happened = next_comp(found_comp['date'])
     if competition_not_happened:
         points_available = int(found_club['points'])
+        places_available = int(found_comp['numberOfPlaces'])
+        if found_comp['name'] in found_club['competitionsReserved']:
+            comp_name = found_comp['name']
+            places_bought = found_club['competitionsReserved'][comp_name]
+        else:
+            places_bought = 0
+        places_leaving_to_buy = 12 - int(places_bought)
         return render_template('booking.html',
                                club=found_club,
                                competition=found_comp,
-                               max=min(points_available, 12))
+                               max=min(points_available,
+                                       places_available,
+                                       places_leaving_to_buy,
+                                       12))
     else:
         flash("Something went wrong-please try again")
         return redirect('/')
