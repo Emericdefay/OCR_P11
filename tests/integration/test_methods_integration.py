@@ -1,11 +1,11 @@
 # Std Libs:
 import datetime
 import sys
-# External Libs:
-import pytest  # noqa: F401
-# Locals Libs:
-import server
 sys.path.append('.')
+# External Libs:
+import pytest  # noqa: F401, E402
+# Locals Libs:
+import server  # noqa: E402
 
 
 class Client:
@@ -44,6 +44,31 @@ class TestShowSummary(Client):
             else:
                 assert rv.status_code == 200
                 assert strg not in rv.data
+
+
+class TestBook(Client):
+    """Integration Book tests"""
+    def test_maximum_buy(self, client):
+        """Test maximum amount of place able to buy"""
+        club = 'Simply Lift'
+        competitition = 'Spring Festival'
+        path = f'book/{competitition}/{club}'
+
+        rv = client.get(path=path, follow_redirects=True)
+        assert rv.status_code == 200
+        assert b'max="12"/>' in rv.data
+
+        form = {
+            'competition': competitition,
+            'club': club,
+            'places': 1,
+
+            }
+        client.post(path='/purchasePlaces', data=form, follow_redirects=True)
+
+        rv = client.get(path=path, follow_redirects=True)
+        assert rv.status_code == 200
+        assert b'max="11"/>' in rv.data
 
 
 class TestPurchasePlaces(Client):

@@ -1,12 +1,12 @@
 # Std Libs:
 import datetime
 import sys
-# External Libs:
-import pytest  # noqa: F401
-import flask
-# Locals Libs:
-import server
 sys.path.append('.')
+# External Libs:
+import pytest  # noqa: F401, E402
+import flask  # noqa: F401, E402
+# Locals Libs:
+import server  # noqa: E402
 
 
 class Client:

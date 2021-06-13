@@ -1,10 +1,10 @@
 # Std Libs:
 import sys
-# External libs:
-import pytest  # noqa: F401
-# Locals Libs:
-from functions import futur_competition
 sys.path.append('.')
+# External libs:
+import pytest  # noqa: F401, E402
+# Locals Libs:
+from functions import futur_competition  # noqa: E402
 
 
 class TestCheckDate:

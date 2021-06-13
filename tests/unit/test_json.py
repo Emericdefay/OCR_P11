@@ -1,10 +1,10 @@
 # Std Libs:
 import sys
-# External libs:
-import pytest  # noqa: F401
-# Locals Libs:
-from server import loadClubs, loadCompetitions
 sys.path.append('.')
+# External libs:
+import pytest  # noqa: F401, E402
+# Locals Libs:
+from server import loadClubs, loadCompetitions  # noqa: E402
 
 
 class TestJSON:

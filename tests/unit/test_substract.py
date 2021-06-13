@@ -1,10 +1,10 @@
 # Std Libs:
 import sys
-# External Libs:
-import pytest  # noqa: F401
-# Locals Libs:
-import functions
 sys.path.append('.')
+# External Libs:
+import pytest  # noqa: F401, E402
+# Locals Libs:
+import functions  # noqa: E402
 
 
 class TestSubstractionsClubPoints:
