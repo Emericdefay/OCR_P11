@@ -5,6 +5,11 @@
         <title>Display Board | GUDLFT</title>
     </head>
     <body>
+        <input
+            action="action"
+            onclick="window.history.go(-1); return false;"
+            type="submit"
+            value="Back"/>
         <h3>Clubs:</h3>
         <ul>
             {% for club in clubs%}
