@@ -131,15 +131,15 @@ class TestPurchasePlaces(Client):
     def test_correct_comp_correct_reserve_correct_club(self, client):
         """Purchase Places
         Correct competition, correct reserve and correct club."""
-
+        coeff = server.coeff
         form = {
             'competition': 'Spring Festival',
             # Place available : 25
             # Competition status : In preparation
             'club': 'Simply Lift',
             # Points available : 13
-            'places': '12'
-            # Points bought : 12
+            'places': f'{12//coeff}'
+            # Points bought : max
                }
         rv = client.post(
             path='/purchasePlaces',
@@ -149,12 +149,14 @@ class TestPurchasePlaces(Client):
         cp_name = form['competition']
         competition = [
             c for c in server.competitions if c['name'] == cp_name][0]
-        assert int(competition['numberOfPlaces']) == 13
+        assert int(competition['numberOfPlaces']) == 25 - int(form['places'])
 
         cl_name = form['club']
         club = [c for c in server.clubs if c['name'] == cl_name][0]
-        assert int(club['points']) == 1
-        assert int(club['competitionsReserved']['Spring Festival']) == 12
+        assert int(club['points']) == 13 - int(form['places'])*coeff
+        assert int(
+            club['competitionsReserved']['Spring Festival']
+            ) == int(form['places'])
 
         assert rv.status_code == 200
         assert b"<li>Confirmation:" in rv.data
@@ -162,15 +164,17 @@ class TestPurchasePlaces(Client):
     def test_multiple_correct_purchase(self, client):
         """Multiple purchase Places
         Correct competition, correct reserve and correct club."""
-
+        server.loadClubs()
+        server.loadCompetitions()
+        coeff = server.coeff
         form = {
             'competition': 'Spring Festival',
             # Place available : 25
             # Competition status : In preparation
             'club': 'Simply Lift',
             # Points available : 13
-            'places': '1'
-            # Points bought : 1
+            'places': f'{1}'
+            # Places bought : 1
                }
         rv = client.post(
             path='/purchasePlaces',
@@ -180,11 +184,11 @@ class TestPurchasePlaces(Client):
         cp_name = form['competition']
         competition = [
             c for c in server.competitions if c['name'] == cp_name][0]
-        assert int(competition['numberOfPlaces']) == 24
+        assert int(competition['numberOfPlaces']) == 25 - int(form['places'])
 
         cl_name = form['club']
         club = [c for c in server.clubs if c['name'] == cl_name][0]
-        assert int(club['points']) == 12
+        assert int(club['points']) == 13 - int(form['places'])*coeff
         assert int(club['competitionsReserved']['Spring Festival']) == 1
 
         assert rv.status_code == 200
@@ -198,11 +202,11 @@ class TestPurchasePlaces(Client):
         cp_name = form['competition']
         competition = [
             c for c in server.competitions if c['name'] == cp_name][0]
-        assert int(competition['numberOfPlaces']) == 23
+        assert int(competition['numberOfPlaces']) == 25 - 2*int(form['places'])
 
         cl_name = form['club']
         club = [c for c in server.clubs if c['name'] == cl_name][0]
-        assert int(club['points']) == 11
+        assert int(club['points']) == int(13 - 2*int(coeff))
         assert int(club['competitionsReserved']['Spring Festival']) == 2
 
         assert rv.status_code == 200
@@ -211,6 +215,9 @@ class TestPurchasePlaces(Client):
     def test_multiple_purchase_but_not_enough_points(self, client):
         """Purchase Places but not enough points
         Correct competition, incorrect reserve and correct club."""
+
+        server.loadClubs()
+        server.loadCompetitions()
 
         form = {
             'competition': 'Spring Festival',

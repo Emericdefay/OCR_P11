@@ -43,9 +43,8 @@
     * clubs.json - list of clubs with relevant information. You can look here to see what email addresses the app will accept for login.
 
 5. Testing
-
-    You are free to use whatever testing framework you like-the main thing is that you can show what tests you are using.
-
-    We also like to show how well we're testing, so there's a module called 
-    [coverage](https://coverage.readthedocs.io/en/coverage-5.1/) you should add to your project.
-
+From /OCR_P11/
+- for PEP8 tests : `flake8` (before getting venv)
+- for tests functionnality : `coverage run -m pytest`
+- for checking coverage of tests : `coverage html` (after tests)
+- for performances tests : `locust --config master.conf` (after running server)

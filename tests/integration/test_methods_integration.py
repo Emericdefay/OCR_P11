@@ -53,22 +53,23 @@ class TestBook(Client):
         club = 'Simply Lift'
         competitition = 'Spring Festival'
         path = f'book/{competitition}/{club}'
-
+        coeff = server.coeff
         rv = client.get(path=path, follow_redirects=True)
         assert rv.status_code == 200
-        assert b'max="12"/>' in rv.data
+        max_first_check = bytes(f'max="{12//coeff}"/>', "utf-8")
+        assert max_first_check in rv.data
 
         form = {
             'competition': competitition,
             'club': club,
             'places': 1,
-
             }
         client.post(path='/purchasePlaces', data=form, follow_redirects=True)
 
         rv = client.get(path=path, follow_redirects=True)
         assert rv.status_code == 200
-        assert b'max="11"/>' in rv.data
+        max_second_check = bytes(f'max="{(12-(1*coeff))//coeff}"/>', "utf-8")
+        assert max_second_check in rv.data
 
 
 class TestPurchasePlaces(Client):
@@ -76,12 +77,13 @@ class TestPurchasePlaces(Client):
     def test_purchase_places_correct_club_and_comp_and_places(self, client):
         """Purchase places
         Correct execution"""
+        coeff = server.coeff
         club = 'Simply Lift'
         # Available points : 13
         competition = 'Spring Festival'
         # Available places : 25
-        nb_places = 12
-        awaited_places = 13
+        nb_places = 12//coeff
+        awaited_places = 25 - (nb_places)
         awaited_points = 1
 
         clubs = server.loadClubs()

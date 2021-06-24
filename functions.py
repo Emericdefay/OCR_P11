@@ -19,7 +19,7 @@ def substract_clubs_points(club_points: int, places_bought: int):
         return False
     if int(club_points) < int(places_bought):
         return False
-    return int(club_points) - int(places_bought)
+    return int(club_points) - (int(places_bought))
 
 
 def substract_comp_places(comp_places: int, places_bought: int):
