@@ -35,6 +35,7 @@ class TestFunctionnal(Client):
         5. Check Display Board
         6. Logout
         """
+        coeff = server.coeff
         # 1. Login
         form = {'email': 'john@simplylift.co'}
         rv = client.post(path='/showSummary', data=form, follow_redirects=True)
@@ -51,11 +52,11 @@ class TestFunctionnal(Client):
         assert rv.status_code == 200
         assert b'How many places?' in rv.data
 
-        # 3. Reserve 12 places
+        # 3. Reserve max places
         form = {
             "competition": competition,
             "club": club,
-            "places": 12,
+            "places": f'{12//coeff}',
         }
         rv = client.post(
             path='/purchasePlaces',
@@ -71,7 +72,7 @@ class TestFunctionnal(Client):
         assert strg not in rv.data
 
         # 5. Check display board to see updates
-        awaited_points = 1
+        awaited_points = 13 - int(form['places'])*coeff
         rv = client.get(path='/displayBoard', follow_redirects=True)
         strg = bytes(f'{club} : {awaited_points}', 'utf-8')
         assert rv.status_code == 200

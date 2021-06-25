@@ -12,14 +12,14 @@ from functions import (substract_clubs_points as sub_club,
 
 
 def loadClubs():
-    """"""
+    """Load clubs from JSON"""
     with open('clubs.json') as c:
         listOfClubs = json.load(c)['clubs']
         return listOfClubs
 
 
 def loadCompetitions():
-    """"""
+    """Load competitions from JSON"""
     with open('competitions.json') as comps:
         listOfCompetitions = json.load(comps)['competitions']
         return listOfCompetitions
@@ -27,6 +27,8 @@ def loadCompetitions():
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
+
+coeff = 3
 
 competitions = loadCompetitions()
 clubs = loadClubs()
@@ -99,7 +101,7 @@ def book(competition, club):
         return render_template('booking.html',
                                club=found_club,
                                competition=found_comp,
-                               max=min(points_available,
+                               max=min(points_available//coeff,
                                        places_available,
                                        places_leaving_to_buy,
                                        12))
@@ -138,7 +140,7 @@ def purchasePlaces():
     if able_to_buy and competition_not_happened:
         comp_places = int(competition['numberOfPlaces'])
         places_still_av = sub_comp(comp_places, places_required)
-        points_club = sub_club(club['points'], places_required)
+        points_club = sub_club(club['points'], places_required*coeff)
         if places_still_av and points_club:
             competition['numberOfPlaces'] = places_still_av
             club['points'] = points_club
